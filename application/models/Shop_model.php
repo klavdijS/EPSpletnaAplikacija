@@ -22,10 +22,6 @@ class Shop_model extends CI_Model {
 			redirect('auth/login');
 		}
 
-		// Zamenjamo vse presledke s pomisljaji in poskrbimo, da so vse
-		// besede napisane v malih tiskanih crkah.
-		$slug = url_title($this->input->post('product'), 'dash', TRUE);
-
 		$user_id = $this->ion_auth->user()->row()->id;
 
 		$data = array(
@@ -34,7 +30,6 @@ class Shop_model extends CI_Model {
 			'date'			=> date('Y/m/d H:i:s'),
 			'price'			=> $this->input->post('price'),
 			'image'			=> $this->upload->data('file_name'),
-			'slug'			=> $slug,
 			'users_id'		=> $user_id
 		);
 

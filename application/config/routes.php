@@ -52,8 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 $route['api/product/(:num)'] = 'api/product/id/$1';
 $route['api/products'] = 'api/products';
-$route['api'] = 'api';
-$route['product/(:any)'] = 'Product/view/$1';
+$route['product/(:num)'] = 'Product/view/$1';
 $route['orders'] = 'Orders';
 $route['my-profile'] = 'MyProfile';
 $route['new-product'] = 'NewProduct';

@@ -6,12 +6,14 @@ class Product extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 
+		$this->load->model('Shop_model');
 		$this->load->helper('url');
 		$this->load->library('ion_auth');
 	}
 
 	public function view( $productId ) {
 		$data["logged_in"] = $this->ion_auth->logged_in();
+		$data["product"] = $this->Shop_model->get_products( $productId );
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/nav', $data);

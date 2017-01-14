@@ -58,7 +58,7 @@
     </nav>
 
     <!-- Page Content -->
-    <div class="container" style="margin-bottom: 40px;">
+    <div class="container bottom-space">
 
         <div class="row">
 
