@@ -22,7 +22,7 @@ class Shop_model extends CI_Model {
 			redirect('auth/login');
 		}
 
-		$user_id = $this->ion_auth->user()->row()->id;
+		$userId = $this->ion_auth->user()->row()->id;
 
 		$data = array(
 			'name'			=> $this->input->post('product'),
@@ -30,10 +30,34 @@ class Shop_model extends CI_Model {
 			'date'			=> date('Y/m/d H:i:s'),
 			'price'			=> $this->input->post('price'),
 			'image'			=> $this->upload->data('file_name'),
-			'users_id'		=> $user_id
+			'users_id'		=> $userId
 		);
 
-		return $this->db->insert('products', $data);
+	 	$this->db->insert('products', $data);
+
+	 	$productId = $this->db->insert_id();
+
+	 	// Shrani še ostale fotografije v fotogalerijo produkta,
+	 	// vendar izpusti prvo fotografijo (t.j. prikazna slika),
+	 	// ki se naloži že v tabelo s produkti.
+	 	foreach ($_FILES as $file) {
+	 		
+	 		// Zamenjaj presledke v imenu datoteke s podčrtaji
+	 		$filename = str_replace(' ', '_', $file["name"]);
+			
+			if ( ! empty($filename) && $filename != $this->upload->data('file_name')) {
+				$data = array(
+			 		'filename'		=> $filename,
+			 		'products_id'	=> $productId
+			 	);
+			
+			 	$this->db->insert('product_gallery', $data);
+			 }
+		 }
+	}
+
+	public function get_product_gallery($id) {
+		return $this->db->get_where('product_gallery', array('products_id' => $id))->result_array();
 	}
 
 }

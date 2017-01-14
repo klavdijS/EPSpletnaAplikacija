@@ -29,14 +29,23 @@
 
                 <!-- Photo -->
                 <div class="form-group">
-                    <label for="photo">Photo:</label>
-                    <?= form_upload($photo); ?>
+                    <label for="featuredImage">Photo:</label>
+                    <?= form_upload($featuredImage); ?>
                 </div>
 
                 <!-- Price -->
                 <div class="form-group">
                     <label for="price">Price:</label>
                     <?= form_input($price); ?>
+                </div>
+
+                <div class="form-group">
+                    <label for="photo">Additional photos:</label>
+                    <div class="row">
+                        <div class="col-sm-4"><?= form_upload($image1); ?></div>
+                        <div class="col-sm-4"><?= form_upload($image2); ?></div>
+                        <div class="col-sm-4"><?= form_upload($image3); ?></div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-default">Add new product</button>
