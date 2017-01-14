@@ -8,13 +8,13 @@ class Shop_model extends CI_Model {
 		date_default_timezone_set('Europe/Ljubljana');
 	}
 
-	public function get_products($slug = FALSE) {
+	public function get_products($id = FALSE) {
 		// Če ni podan specifičen produkt, vrni vse produkte iz baze.
-		if ($slug === FALSE) {
+		if ($id === FALSE) {
 			return $this->db->get('products')->result_array();
 		}
 
-		return $this->db->get_where('products', array('slug' => $slug))->row_array();
+		return $this->db->get_where('products', array('id' => $id))->row_array();
 	}
 
 	public function set_product() {
