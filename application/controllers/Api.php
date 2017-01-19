@@ -12,6 +12,7 @@ class Api extends REST_Controller {
 
 		$this->load->model('Shop_model');
 		$this->load->library('ion_auth');
+		$this->load->library('form_validation');
 		$this->load->helper('url');
 	}
 
@@ -47,6 +48,27 @@ class Api extends REST_Controller {
 
 	public function login_post() {
 		if ($this->ion_auth->login($this->post('username'), $this->post('password'))) {
+			$this->response(array('status' => 'success'));
+		} else {
+			$this->response(array('status' => 'failed'));
+		}
+	}
+
+	public function register_post() {
+		$identity = $this->post('username');
+		$password = $this->post('password');
+		$email = $this->post('email');
+		$additional_data = array(
+			'first_name' 	=> $this->post('first_name'),
+			'last_name'  	=> $this->post('last_name'),
+			'street'		=> $this->post('street'),
+			'street_number'	=> $this->post('street_number'),
+			'city'			=> $this->post('city'),
+			'postcode'		=> $this->post('postcode'),
+			'country'		=> $this->post('country'),
+			'phone'      	=> $this->post('phone'),
+		);
+		if ($this->ion_auth->register($identity, $password, $email, $additional_data)) {
 			$this->response(array('status' => 'success'));
 		} else {
 			$this->response(array('status' => 'failed'));
