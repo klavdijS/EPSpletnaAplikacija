@@ -21,9 +21,11 @@
                     <li>
                         <a href="<?= base_url(); ?>orders">Orders</a>
                     </li>
-                    <li>
-                        <a href="<?= base_url(); ?>my-profile">My profile</a>
-                    </li>
+                    <?php if ( $user_group["group_id"] == 1 OR $user_group["group_id"] == 2 ): ?>
+                        <li>
+                            <a href="<?= base_url(); ?>my-profile">My profile</a>
+                        </li>
+                    <?php endif; ?>
                     <li>
                         <a href="#">Edit users</a>
                     </li>

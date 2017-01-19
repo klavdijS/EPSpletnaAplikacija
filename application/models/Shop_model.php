@@ -60,4 +60,12 @@ class Shop_model extends CI_Model {
 		return $this->db->get_where('product_gallery', array('products_id' => $id))->result_array();
 	}
 
+	public function get_user_group($id) {
+		return $this->db->select('*')->from('users_groups')->where('user_id', $id)->join('groups', 'groups.id = users_groups.group_id')->get()->row_array();	
+	}
+
+	public function get_user($id) {
+		return $this->db->get_where('users', array('id' => $id))->row_array();
+	}
+
 }

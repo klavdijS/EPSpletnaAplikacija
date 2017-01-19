@@ -6,6 +6,7 @@ class Orders extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 
+		$this->load->model('Shop_model');
 		$this->load->helper('url');
 		$this->load->library('ion_auth');
 	}
@@ -16,6 +17,7 @@ class Orders extends CI_Controller {
 		}
 		
 		$data["logged_in"] = $this->ion_auth->logged_in();
+		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/nav', $data);
