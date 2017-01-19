@@ -11,6 +11,7 @@ class Api extends REST_Controller {
 		parent::__construct();
 
 		$this->load->model('Shop_model');
+		$this->load->library('ion_auth');
 		$this->load->helper('url');
 	}
 
@@ -41,6 +42,14 @@ class Api extends REST_Controller {
 			$this->response($products, 200);
 		} else {
 			$this->response(NULL, 404);
+		}
+	}
+
+	public function login_post() {
+		if ($this->ion_auth->login($this->post('username'), $this->post('password'))) {
+			$this->response(array('status' => 'success'));
+		} else {
+			$this->response(array('status' => 'failed'));
 		}
 	}
 
