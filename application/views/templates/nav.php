@@ -16,9 +16,8 @@
             <?php if ( $logged_in ) : ?>
                 <ul class="nav navbar-nav">
                     <?php if ( $user_group["group_id"] == 2 ): ?>
-                        <li>
-                            <a href="<?= base_url(); ?>new-product">Add new product</a>
-                        </li>
+                        <li><a href="<?= base_url(); ?>new-product">Add new product</a></li>
+                        <li><a href="<?= base_url(); ?>my-products">My products</a></li>
                     <?php endif; ?>
                     <?php if ( $user_group["group_id"] == 2 OR $user_group["group_id"] == 3 ): ?>
                         <li>

@@ -26,7 +26,7 @@ class Api extends REST_Controller {
 			$this->response(NULL, 400);
 		}
 
-		$product = $this->Shop_model->get_products( $this->get('id') );
+		$product = $this->Shop_model->get_product( $this->get('id') );
 		$product["image"] = base_url().'uploads/'. $product["image"];
 
 		// Sporoči, če produkt z navedenim ID-jem obstaja ali ne.

@@ -14,6 +14,10 @@ class Shop_model extends CI_Model {
 			return $this->db->get('products')->result_array();
 		}
 
+		return $this->db->get_where('products', array('users_id' => $id))->result_array();
+	}
+
+	public function get_product($id) {
 		return $this->db->get_where('products', array('id' => $id))->row_array();
 	}
 
@@ -25,7 +29,7 @@ class Shop_model extends CI_Model {
 		$userId = $this->ion_auth->user()->row()->id;
 
 		$data = array(
-			'name'			=> $this->input->post('product'),
+			'name'			=> $this->input->post('name'),
 			'description'	=> $this->input->post('description'),
 			'date'			=> date('Y/m/d H:i:s'),
 			'price'			=> $this->input->post('price'),
@@ -56,8 +60,62 @@ class Shop_model extends CI_Model {
 		 }
 	}
 
+	public function update_product($userId, $productId) {
+		if (!$this->ion_auth->logged_in()) {
+			redirect('auth/login');
+		}
+
+		$data = array(
+			'name'			=> $this->input->post('name'),
+			'description'	=> $this->input->post('description'),
+			'date'			=> date('Y/m/d H:i:s'),
+			'price'			=> $this->input->post('price'),
+			'users_id'		=> $userId
+		);
+
+		if ($_FILES["featuredImage"]["name"]) {
+			$filename = str_replace(' ', '_', $_FILES['featuredImage']["name"]);
+			$data['image'] = $filename;
+		}
+
+	 	$this->db->where('id', $productId)->update('products', $data);
+
+	 	// Shrani še ostale fotografije v fotogalerijo produkta.
+	 	for($image = 1; $image <= 3; $image++) {
+	 		
+	 		// Zamenjaj presledke v imenu datoteke s podčrtaji
+	 		$filename = isset($_FILES['image'.$image]) ? str_replace(' ', '_', $_FILES['image'.$image]["name"]) : "";
+
+			if ( ! empty($filename) ) {
+				$data = array(
+			 		'filename'		=> $filename,
+			 		'products_id'	=> $productId
+			 	);
+
+				if($this->input->post('imageId'.$image)) {
+					$old_image_id = $this->input->post('imageId'.$image);
+					$this->db->where('id', $old_image_id)->update('product_gallery', $data);
+				} else {
+					$this->db->insert('product_gallery', $data);
+				}
+			 }
+		 }
+	}
+
 	public function get_product_gallery($id) {
 		return $this->db->get_where('product_gallery', array('products_id' => $id))->result_array();
+	}
+
+	public function delete_image() {
+		return $this->db->delete('product_gallery', array('id' => $this->input->post('delete_image')));
+	}
+
+	public function deactivate_product($id) {
+		return $this->db->where('id', $id)->update('products', array('active' => FALSE));
+	}
+
+	public function activate_product($id) {
+		return $this->db->where('id', $id)->update('products', array('active' => TRUE));
 	}
 
 	public function get_user_group($id) {
