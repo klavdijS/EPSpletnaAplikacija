@@ -27,6 +27,7 @@ class Api extends REST_Controller {
 		}
 
 		$product = $this->Shop_model->get_products( $this->get('id') );
+		$product["image"] = base_url().'uploads/'. $product["image"];
 
 		// Sporoči, če produkt z navedenim ID-jem obstaja ali ne.
 		if ($product) {
@@ -38,6 +39,10 @@ class Api extends REST_Controller {
 
 	public function products_get() {
 		$products = $this->Shop_model->get_products();
+
+		for ($i = 0; $i < count($products); $i++) {
+			$products[$i]["image"] = base_url().'uploads/'. $products[$i]["image"];
+		}
 
 		if ($products) {
 			$this->response($products, 200);
