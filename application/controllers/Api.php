@@ -60,6 +60,8 @@ class Api extends REST_Controller {
 	}
 
 	public function register_post() {
+		$users = $this->Shop_model->get_user();
+		$usernames = array_unique(array_map(function ($i) { return $i['username']; }, $users));
 		$identity = $this->post('username');
 		$password = $this->post('password');
 		$email = $this->post('email');
@@ -73,7 +75,7 @@ class Api extends REST_Controller {
 			'country'		=> $this->post('country'),
 			'phone'      	=> $this->post('phone'),
 		);
-		if ($this->ion_auth->register($identity, $password, $email, $additional_data)) {
+		if (!in_array($identity, $usernames) && $this->ion_auth->register($identity, $password, $email, $additional_data)) {
 			$this->response(array('status' => 'success'));
 		} else {
 			$this->response(array('status' => 'failed'));

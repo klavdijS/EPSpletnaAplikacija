@@ -67,7 +67,6 @@ class Shop_model extends CI_Model {
 	public function get_user($id = FALSE) {
 		if ($id === FALSE) {
 			return $this->db->select('*')->from('users')->join('users_groups', 'users_groups.user_id = users.id')->get()->result_array();
-			//return $this->db->get('users')->result_array();
 		}
 
 		return $this->db->get_where('users', array('id' => $id))->row_array();
