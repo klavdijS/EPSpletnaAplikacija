@@ -4,6 +4,7 @@ class Auth extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('Shop_model');
 		$this->load->database();
 		$this->load->library(array('ion_auth','form_validation'));
 		$this->load->helper(array('url','language'));
@@ -99,6 +100,9 @@ class Auth extends CI_Controller {
 
 		$user = $this->ion_auth->user()->row();
 
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
+
 		if ($this->form_validation->run() == false) {
 			// display the form
 			// set the flash data error message if there is one
@@ -134,7 +138,11 @@ class Auth extends CI_Controller {
 			);
 
 			// render
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/change_password', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		} else {
 			$identity = $this->session->userdata('identity');
 
