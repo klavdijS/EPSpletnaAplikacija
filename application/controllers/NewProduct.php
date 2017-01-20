@@ -28,12 +28,12 @@ class NewProduct extends CI_Controller {
 			redirect('auth/login');
 		}
 
+		$data["logged_in"] = $this->ion_auth->logged_in();
+		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+
 		if ($data["user_group"]["group_id"] != 2) {
 			redirect('');
 		}
-		
-		$data["logged_in"] = $this->ion_auth->logged_in();
-		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
 
 		// Validacija poslanih podatkov
 		$this->form_validation->set_rules('product', 'product', 'required');
