@@ -7,6 +7,9 @@
 
             <h1>My Profile</h1>
 
+            <div <?php if( validation_errors() ) echo 'class="alert alert-warning"'; ?>><?= validation_errors(); ?></div>
+            <div <?php if( $this->session->flashdata('success') ) echo 'class="alert alert-success"'; ?>><?= $this->session->flashdata('success'); ?></div>
+
             <?php echo form_open("my-profile");?>
 
                 <!-- First Name / Last Name -->
@@ -76,7 +79,7 @@
                     <?php echo form_input($phone); ?>
                 </div>
 
-                <?php echo form_submit('submit', "Edit my profile", array("class" => "btn btn-default")); ?>
+                <?php echo form_submit('submit', "Update", array("class" => "btn btn-default")); ?>
 
             <?php echo form_close();?>
 

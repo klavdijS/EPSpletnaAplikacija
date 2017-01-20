@@ -68,4 +68,20 @@ class Shop_model extends CI_Model {
 		return $this->db->get_where('users', array('id' => $id))->row_array();
 	}
 
+	public function update_user($id) {
+		$data = array(
+			'first_name'	=> $this->input->post('first_name'),
+			'last_name'		=> $this->input->post('last_name'),
+			'email'			=> $this->input->post('email'),
+			'phone'			=> $this->input->post('phone'),
+			'street'		=> $this->input->post('street'),
+			'street_number'	=> $this->input->post('street_number'),
+			'city'			=> $this->input->post('city'),
+			'postcode'		=> $this->input->post('postcode'),
+			'country'		=> $this->input->post('country')
+		);
+
+		return $this->db->where('id', $id)->update('users', $data);
+	}
+
 }

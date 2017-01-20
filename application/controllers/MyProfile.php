@@ -91,20 +91,20 @@ class MyProfile extends CI_Controller {
 		);
 
 		// validate form input
-		/*
-		WIP: 
-		$this->form_validation->set_rules('first_name', $this->lang->line('create_user_validation_fname_label'), 'required');
-		$this->form_validation->set_rules('last_name', 'jeba', 'required');
-		$this->form_validation->set_rules('email', $this->lang->line('create_user_validation_email_label'), 'required|valid_email');
-		$this->form_validation->set_rules('phone', $this->lang->line('create_user_validation_phone_label'), 'trim');
-		$this->form_validation->set_rules('street', $this->lang->line('create_user_validation_address_street_label'), 'trim');
-		$this->form_validation->set_rules('street_number', $this->lang->line('create_user_validation_address_street_number_label'), 'trim');
-		$this->form_validation->set_rules('city', $this->lang->line('create_user_validation_address_city_label'), 'trim');
-		$this->form_validation->set_rules('postcode', $this->lang->line('create_user_validation_address_postcode_label'), 'trim');
-		$this->form_validation->set_rules('country', $this->lang->line('create_user_validation_address_country_label'), 'trim');
-		$this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
-		$this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
-		*/
+		$this->form_validation->set_rules('first_name', 'First name', 'required');
+		$this->form_validation->set_rules('last_name', 'Last name', 'required');
+		$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+		$this->form_validation->set_rules('phone', 'Phone', 'trim');
+		$this->form_validation->set_rules('street', 'Street', 'trim');
+		$this->form_validation->set_rules('street_number', 'Street number', 'trim');
+		$this->form_validation->set_rules('city', 'City', 'trim');
+		$this->form_validation->set_rules('postcode', 'Postcode', 'trim');
+		$this->form_validation->set_rules('country', 'Country', 'trim');
+		
+		if ($this->form_validation->run() == true) {
+			$this->Shop_model->update_user($user["id"]);
+			$this->session->set_flashdata('success', 'Your profile is successfully updated.');
+		}
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/nav', $data);
