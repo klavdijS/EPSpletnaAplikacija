@@ -15,20 +15,27 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <?php if ( $logged_in ) : ?>
                 <ul class="nav navbar-nav">
-                    <li>
-                        <a href="<?= base_url(); ?>new-product">Add new product</a>
-                    </li>
-                    <li>
-                        <a href="<?= base_url(); ?>orders">Orders</a>
-                    </li>
+                    <?php if ( $user_group["group_id"] == 2 ): ?>
+                        <li>
+                            <a href="<?= base_url(); ?>new-product">Add new product</a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if ( $user_group["group_id"] == 2 OR $user_group["group_id"] == 3 ): ?>
+                        <li>
+                            <a href="<?= base_url(); ?>orders">Orders</a>
+                        </li>
+                    <?php endif; ?>
                     <?php if ( $user_group["group_id"] == 1 OR $user_group["group_id"] == 2 ): ?>
                         <li>
                             <a href="<?= base_url(); ?>my-profile">My profile</a>
                         </li>
+                        <li>
+                            <a href="<?= base_url(); ?>create-users">Create users</a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url(); ?>edit-users">Edit users</a>
+                        </li>
                     <?php endif; ?>
-                    <li>
-                        <a href="#">Edit users</a>
-                    </li>
                 </ul>
             <?php endif; ?>
             <ul class="nav navbar-nav navbar-right">
@@ -43,10 +50,10 @@
                     </li>
                 <?php else : ?>
                     <li>
-                        <a href="auth/login">Login</a>
+                        <a href="<?= base_url(); ?>auth/login">Login</a>
                     </li>
                     <li>
-                        <a href="auth/create_user">Sign up</a>
+                        <a href="<?= base_url(); ?>auth/create_user">Sign up</a>
                     </li>
                 <?php endif; ?>
             </ul>
