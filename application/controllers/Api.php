@@ -27,7 +27,9 @@ class Api extends REST_Controller {
 		}
 
 		$product = $this->Shop_model->get_product( $this->get('id') );
-		$product["image"] = base_url().'uploads/'. $product["image"];
+		$product["image"] = array(base_url().'uploads/'. $product["image"]);
+		$images = $this->Shop_model->get_product_gallery($product["id"]);
+		foreach ($images as $image) array_push($product["image"], base_url().'uploads/'.$image["filename"]);
 
 		// Sporoči, če produkt z navedenim ID-jem obstaja ali ne.
 		if ($product) {
@@ -41,7 +43,9 @@ class Api extends REST_Controller {
 		$products = $this->Shop_model->get_products();
 
 		for ($i = 0; $i < count($products); $i++) {
-			$products[$i]["image"] = base_url().'uploads/'. $products[$i]["image"];
+			$products[$i]["image"] = array(base_url().'uploads/'. $products[$i]["image"]);
+			$images = $this->Shop_model->get_product_gallery($products[$i]["id"]);
+			foreach ($images as $image) array_push($products[$i]["image"], base_url().'uploads/'.$image["filename"]);
 		}
 
 		if ($products) {
