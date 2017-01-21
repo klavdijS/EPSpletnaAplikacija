@@ -142,10 +142,10 @@ class Api extends REST_Controller {
         if ($this->ion_auth->login($this->post('username'), $this->post('password'))) {
             $userId = $this->ion_auth->user()->row()->id;
             $this->Shop_model-> update_user($userId);
-            $updated = false;
+            $updated = FALSE;
             if (isset($_POST['new_password'])) {
-                $data = array('password' => $this->post['new_password']);
-                $updated = $this -> ion_auth -> update($userId,$data);
+                $this->ion_auth->change_password($this->post('username'), $this->post('password'), $this->input->post('new_password'));
+                $updated = TRUE;
             }
             $user = $this->Shop_model->get_user($userId);
             $data = array(
