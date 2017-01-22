@@ -9,6 +9,10 @@
 
             <table class="table table-striped">
                 <thead>
+                    <?php if ($user_group['group_id'] == 1): ?>
+                    <th>Seller id</th>
+                    <th>Buyer id</th>
+                    <?php endif; ?>
                     <th>Product</th>
                     <th>Quantity</th>
                     <th>Price</th>
@@ -21,8 +25,14 @@
                         $qty = $order['qty'];
                         $status = $order['status'];
                         $name = $order['name'];
-                        $price = $order['price']; ?>
+                        $price = $order['price'];
+                        $seller = $order['users_id'];
+                        $buyer = $order['users_id1'] ?>
                     <tr>
+                        <?php if ($user_group['group_id'] == 1): ?>
+                        <td><?= $order["users_id"]; ?></td>
+                        <td><?= $order["users_id1"]; ?></td>
+                        <?php endif; ?>
                         <td><?= $order["name"]; ?></td>
                         <td><?= $order["qty"]; ?></td>
                         <td>$ <?= $order["price"]; ?></td>
