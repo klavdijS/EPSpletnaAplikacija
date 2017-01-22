@@ -12,6 +12,7 @@ class Auth extends CI_Controller {
 		$this->load->library('cart');
 		$this->load->library('session');
 		$this->load->helper('form');
+		$this->load->library('recaptcha');
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
 
@@ -381,7 +382,6 @@ class Auth extends CI_Controller {
         if ($this->ion_auth->logged_in()) {
 			redirect($this->agent->referrer());
 		}
-
         $this->data['title'] = $this->lang->line('create_user_heading');
 
         #if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
@@ -412,6 +412,7 @@ class Auth extends CI_Controller {
         $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
 
+        $captcha = 0;
         if ($this->form_validation->run() == true) {
             $email    = strtolower($this->input->post('email'));
             $identity = ($identity_column==='email') ? $email : $this->input->post('identity');
@@ -427,15 +428,24 @@ class Auth extends CI_Controller {
                 'country'		=> $this->input->post('country'),
                 'phone'      	=> $this->input->post('phone'),
             );
+
+            $this->recaptcha->recaptcha_check_answer();
+            if ($this->recaptcha->getIsValid()) {
+            	$captcha = 1;
+            }
         }
-        if ($this->form_validation->run() == true && $this->ion_auth->register($identity, $password, $email, $additional_data)) {
+
+        if ($this->form_validation->run() == true  && $captcha == 1 && $this->ion_auth->register($identity, $password, $email, $additional_data)) {
             // check to see if we are creating the user
             // redirect them back to the admin page
+            
             $this->session->set_flashdata('message', $this->ion_auth->messages());
             redirect("auth", 'refresh');
-        } else {
+        }
+        else {
             // display the create user form
             // set the flash data error message if there is one
+            $this->data['recaptcha_html'] = $this->recaptcha->recaptcha_get_html();
             $this->data['message'] = (validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')));
 
             $this->data['first_name'] = array(
