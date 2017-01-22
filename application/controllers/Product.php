@@ -9,6 +9,7 @@ class Product extends CI_Controller {
 		$this->load->model('Shop_model');
 		$this->load->helper('url');
 		$this->load->library('ion_auth');
+		$this->load->library('session');
 	}
 
 	public function view( $productId ) {
@@ -25,9 +26,10 @@ class Product extends CI_Controller {
 	}
 
 	public function vote() {
-		if( isset($_POST['vote']) && isset($_POST['id'])  ) {
+		if( isset($_POST['vote']) && isset($_POST['id']) && !isset($_SESSION['voted']) ) {
 			$vote = $_POST['vote'];
 			$id = $_POST['id'];
+			$this->session->set_userdata('voted', TRUE);
 			echo $this->Shop_model->set_votes( $vote, $id );
 		}
 	}

@@ -30,7 +30,7 @@ class MyProducts extends CI_Controller {
 		$data["user_group"] = $this->Shop_model->get_user_group($userId);
 		$data["products"] = $this->Shop_model->get_products($userId);
 
-		if ($data["user_group"]["id"] != 2) {
+		if ($data["user_group"]["group_id"] != 1 && $data["user_group"]["id"] != 2) {
 			redirect('');
 		}
 
