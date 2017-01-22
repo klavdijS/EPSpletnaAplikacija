@@ -1,5 +1,5 @@
 <!-- Page Content -->
-<div class="container">
+<div class="container bottom-space">
 
     <div class="row">
 
@@ -7,83 +7,55 @@
 
             <div class="row">
 
-                <div class="col-sm-4 col-lg-4 col-md-4">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/320x150" alt="">
-                        <div class="caption">
-                            <h4 class="pull-right">$24.99</h4>
-                            <h4><a href="<?= base_url(); ?>product/1">First Product</a></h4>
-                            <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                            <input type="button" class="btn btn-success btn-sm" value="Add to cart">
+                <?php foreach ($products as $product): ?>
+                 <?php if ($product["active"]) : ?>
+                    <?php
+                        // Skrajšaj dolžino opisa na 100 znakov
+                        $abstract = $product["description"];
+                        if (strlen($abstract) > 100)
+                            $abstract = substr($product["description"], 0, strpos($product["description"], ' ', 100)).' ...';
+                    ?>
+
+                    <div class="col-sm-6 col-lg-4 col-md-4">
+                        <div class="thumbnail">
+                            <img src="<?= base_url().'uploads/'.$product["image"]; ?>" alt="<?= $product["name"]; ?>">
+                            <div class="caption">
+                                <h4 class="pull-right">$<?= $product["price"]; ?></h4>
+                                <h4><a href="<?= base_url().'product/'.$product["id"]; ?>"><?= $product["name"]; ?></a></h4>
+                                <p><?= $abstract; ?></p>
+                                <?php
+                                $id = $product['id'];
+                                $name = $product['name'];
+                                $price = $product['price'];
+                                echo form_open('home/addCart');
+                                echo form_hidden('id', $id);
+                                echo form_hidden('name', $name);
+                                echo form_hidden('price', $price);
+                                ?>
+                                <div class="ratings">
+                                    <p class="pull-right">
+                                        Votes: <?= $product["rating"]; ?>
+                                    </p>
+                                    <?php 
+                                        $btn = array(
+                                            'class' => 'btn btn-success btn-sml',
+                                            'value' => 'Add to Cart',
+                                            'name' => 'action'
+                                        );
+                                        echo form_submit($btn);
+                                        echo form_close();
+                                    ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <?php endif; ?>
 
-                <div class="col-sm-4 col-lg-4 col-md-4">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/320x150" alt="">
-                        <div class="caption">
-                            <h4 class="pull-right">$64.99</h4>
-                            <h4><a href="<?= base_url(); ?>product/2">Second Product</a></h4>
-                            <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                            <input type="button" class="btn btn-success btn-sm" value="Add to cart">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-4 col-lg-4 col-md-4">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/320x150" alt="">
-                        <div class="caption">
-                            <h4 class="pull-right">$74.99</h4>
-                            <h4><a href="<?= base_url(); ?>product/3">Third Product</a></h4>
-                            <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                            <input type="button" class="btn btn-success btn-sm" value="Add to cart">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-4 col-lg-4 col-md-4">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/320x150" alt="">
-                        <div class="caption">
-                            <h4 class="pull-right">$84.99</h4>
-                            <h4><a href="<?= base_url(); ?>product/4">Fourth Product</a></h4>
-                            <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                            <input type="button" class="btn btn-success btn-sm" value="Add to cart">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-4 col-lg-4 col-md-4">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/320x150" alt="">
-                        <div class="caption">
-                            <h4 class="pull-right">$94.99</h4>
-                            <h4><a href="product/5">Fifth Product</a></h4>
-                            <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                            <input type="button" class="btn btn-success btn-sm" value="Add to cart">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-4 col-lg-4 col-md-4">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/320x150" alt="">
-                        <div class="caption">
-                            <h4 class="pull-right">$94.99</h4>
-                            <h4><a href="product/6">Sixth Product</a></h4>
-                            <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                            <input type="button" class="btn btn-success btn-sm" value="Add to cart">
-                        </div>
-                    </div>
-                </div>
-
+                <?php endforeach; ?>
             </div>
-
         </div>
 
     </div>
+<!-- /.container -->
 
 </div>
-<!-- /.container -->

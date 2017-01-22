@@ -4,10 +4,15 @@ class Auth extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('Shop_model');
 		$this->load->database();
 		$this->load->library(array('ion_auth','form_validation'));
 		$this->load->helper(array('url','language'));
 		$this->load->library('user_agent');
+		$this->load->library('cart');
+		$this->load->library('session');
+		$this->load->helper('form');
+		$this->load->library('recaptcha');
 
 		$this->form_validation->set_error_delimiters($this->config->item('error_start_delimiter', 'ion_auth'), $this->config->item('error_end_delimiter', 'ion_auth'));
 
@@ -28,10 +33,18 @@ class Auth extends CI_Controller {
 	// log the user in
 	public function login() {
 		if ($this->ion_auth->logged_in()) {
+			if($_SERVER["SSL_CLIENT_VERIFY"] !== null && $_SERVER["SSL_CLIENT_VERIFY"] == "SUCCESS") {
+				$username = $this->input->post('identity');
+				$group = $this->Shop_model->get_user_group_by_name($username);
+				log_message('error', 'User '.$username.' ['.$group["name"].'] was successfully certified. IP: '.$_SERVER['REMOTE_ADDR']);
+				redirect('/', 'refresh');
+			}
 			redirect($this->agent->referrer());
 		}
 
 		$this->data['title'] = $this->lang->line('login_heading');
+
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		//validate form input
 		$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required');
@@ -41,8 +54,15 @@ class Auth extends CI_Controller {
 			// check to see if the user is logging in
 			// check for "remember me"
 			$remember = (bool) $this->input->post('remember');
-
+			
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)) {
+				if($this->ion_auth->in_group(array(1, 2))) {
+					$username = $this->input->post('identity');
+					$group = $this->Shop_model->get_user_group_by_name($username);
+					log_message('error', 'User '.$username.' ['.$group["name"].'] was successfully logged in. IP: '.$_SERVER['REMOTE_ADDR']);
+					redirect('protected');
+				}
+
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->ion_auth->messages());
@@ -51,7 +71,7 @@ class Auth extends CI_Controller {
 				// if the login was un-successful
 				// redirect them back to the login page
 				$this->session->set_flashdata('message', $this->ion_auth->errors());
-				redirect('auth/login', 'refresh'); // use redirects instead of loading views for compatibility with MY_Controller libraries
+				redirect('auth/login', 'refresh');
 			}
 		} else {
 			// the user is not logging in so display the login page
@@ -70,8 +90,16 @@ class Auth extends CI_Controller {
 				'class' => 'form-control',
 			);
 
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/login', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		}
+	}
+
+	public function get_cert() {
+		redirect('auth/login');
 	}
 
 	// log the user out
@@ -83,8 +111,7 @@ class Auth extends CI_Controller {
 
 		// redirect them to the login page
 		$this->session->set_flashdata('message', $this->ion_auth->messages());
-		# redirect('auth/login', 'refresh');
-		redirect($this->agent->referrer());
+		redirect('auth/login', 'refresh');
 	}
 
 	// change password
@@ -98,6 +125,9 @@ class Auth extends CI_Controller {
 		}
 
 		$user = $this->ion_auth->user()->row();
+
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		if ($this->form_validation->run() == false) {
 			// display the form
@@ -134,7 +164,11 @@ class Auth extends CI_Controller {
 			);
 
 			// render
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/change_password', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		} else {
 			$identity = $this->session->userdata('identity');
 
@@ -289,17 +323,19 @@ class Auth extends CI_Controller {
 
 	// activate the user
 	public function activate($id, $code=false) {
+		$user_group = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		
 		if ($code !== false) {
 			$activation = $this->ion_auth->activate($id, $code);
 		}
-		else if ($this->ion_auth->is_admin()) {
+		else if ($this->ion_auth->is_admin() OR $user_group["id"] == 2) {
 			$activation = $this->ion_auth->activate($id);
 		}
 
 		if ($activation) {
 			// redirect them to the auth page
 			$this->session->set_flashdata('message', $this->ion_auth->messages());
-			redirect("auth", 'refresh');
+			redirect("edit-users", 'refresh');
 		} else {
 			// redirect them to the forgot password page
 			$this->session->set_flashdata('message', $this->ion_auth->errors());
@@ -309,10 +345,13 @@ class Auth extends CI_Controller {
 
 	// deactivate the user
 	public function deactivate($id = NULL) {
-		if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && $this->data["user_group"]["id"] != 2)) {
 			// redirect them to the home page because they must be an administrator to view this
 			return show_error('You must be an administrator to view this page.');
 		}
+
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		$id = (int) $id;
 
@@ -325,7 +364,11 @@ class Auth extends CI_Controller {
 			$this->data['csrf'] = $this->_get_csrf_nonce();
 			$this->data['user'] = $this->ion_auth->user($id)->row();
 
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/deactivate_user', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		} else {
 			// do we really want to deactivate?
 			if ($this->input->post('confirm') == 'yes') {
@@ -335,13 +378,13 @@ class Auth extends CI_Controller {
 				}
 
 				// do we have the right userlevel?
-				if ($this->ion_auth->logged_in() && $this->ion_auth->is_admin()) {
+				if ($this->ion_auth->logged_in() && ($this->ion_auth->is_admin() OR $this->data["user_group"]["id"] == 2)) {
 					$this->ion_auth->deactivate($id);
 				}
 			}
 
 			// redirect them back to the auth page
-			redirect('auth', 'refresh');
+			redirect("edit-users", 'refresh');
 		}
 	}
 
@@ -350,12 +393,13 @@ class Auth extends CI_Controller {
         if ($this->ion_auth->logged_in()) {
 			redirect($this->agent->referrer());
 		}
-
         $this->data['title'] = $this->lang->line('create_user_heading');
 
         #if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
         #    redirect('auth', 'refresh');
         #}
+
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
         $tables = $this->config->item('tables','ion_auth');
         $identity_column = $this->config->item('identity','ion_auth');
@@ -379,6 +423,7 @@ class Auth extends CI_Controller {
         $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
 
+        $captcha = 0;
         if ($this->form_validation->run() == true) {
             $email    = strtolower($this->input->post('email'));
             $identity = ($identity_column==='email') ? $email : $this->input->post('identity');
@@ -394,15 +439,24 @@ class Auth extends CI_Controller {
                 'country'		=> $this->input->post('country'),
                 'phone'      	=> $this->input->post('phone'),
             );
+
+            $this->recaptcha->recaptcha_check_answer();
+            if ($this->recaptcha->getIsValid()) {
+            	$captcha = 1;
+            }
         }
-        if ($this->form_validation->run() == true && $this->ion_auth->register($identity, $password, $email, $additional_data)) {
+
+        if ($this->form_validation->run() == true  && $captcha == 1 && $this->ion_auth->register($identity, $password, $email, $additional_data)) {
             // check to see if we are creating the user
             // redirect them back to the admin page
+            
             $this->session->set_flashdata('message', $this->ion_auth->messages());
             redirect("auth", 'refresh');
-        } else {
+        }
+        else {
             // display the create user form
             // set the flash data error message if there is one
+            $this->data['recaptcha_html'] = $this->recaptcha->recaptcha_get_html();
             $this->data['message'] = (validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')));
 
             $this->data['first_name'] = array(
@@ -490,31 +544,33 @@ class Auth extends CI_Controller {
                 'class' => 'form-control',
             );
 
-            $this->_render_page('auth/register', $this->data);
+            $this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
+			$this->_render_page('auth/register', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
         }
     }
 
 	// edit a user
 	public function edit_user($id) {
 		$this->data['title'] = $this->lang->line('edit_user_heading');
-
-		if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && !($this->ion_auth->user()->row()->id == $id))) {
-			redirect('auth', 'refresh');
-		}
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		$user = $this->ion_auth->user($id)->row();
 		$groups=$this->ion_auth->groups()->result_array();
 		$currentGroups = $this->ion_auth->get_users_groups($id)->result();
 
 		// validate form input
-		$this->form_validation->set_rules('first_name', $this->lang->line('edit_user_validation_fname_label'), 'required');
-		$this->form_validation->set_rules('last_name', $this->lang->line('edit_user_validation_lname_label'), 'required');
-		$this->form_validation->set_rules('phone', $this->lang->line('edit_user_validation_phone_label'), 'required');
-		$this->form_validation->set_rules('street', $this->lang->line('edit_user_validation_address_street_label'), 'required');
-		$this->form_validation->set_rules('street_number', $this->lang->line('edit_user_validation_address_street_number_label'), 'required');
-		$this->form_validation->set_rules('city', $this->lang->line('edit_user_validation_address_city_label'), 'required');
-		$this->form_validation->set_rules('postcode', $this->lang->line('edit_user_validation_address_postcode_label'), 'required');
-		$this->form_validation->set_rules('country', $this->lang->line('edit_user_validation_address_country_label'), 'required');
+		$this->form_validation->set_rules('first_name', $this->lang->line('create_user_validation_fname_label'), 'required');
+        $this->form_validation->set_rules('last_name', $this->lang->line('create_user_validation_lname_label'), 'required');
+        $this->form_validation->set_rules('phone', $this->lang->line('create_user_validation_phone_label'), 'trim');
+        $this->form_validation->set_rules('street', $this->lang->line('create_user_validation_address_street_label'), 'trim');
+        $this->form_validation->set_rules('street_number', $this->lang->line('create_user_validation_address_street_number_label'), 'trim');
+        $this->form_validation->set_rules('city', $this->lang->line('create_user_validation_address_city_label'), 'trim');
+        $this->form_validation->set_rules('postcode', $this->lang->line('create_user_validation_address_postcode_label'), 'trim');
+        $this->form_validation->set_rules('country', $this->lang->line('create_user_validation_address_country_label'), 'trim');
 
 		if (isset($_POST) && !empty($_POST)) {
 			// do we have a valid request?
@@ -667,7 +723,11 @@ class Auth extends CI_Controller {
 			'class' => 'form-control',
 		);
 
+		$this->load->view('templates/header');
+		$this->load->view('templates/nav', $this->data);
 		$this->_render_page('auth/edit_user', $this->data);
+		$this->load->view('templates/shopping-cart', $this->data);
+		$this->load->view('templates/footer');
 	}
 
 	// create a new group
