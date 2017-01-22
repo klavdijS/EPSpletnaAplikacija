@@ -41,6 +41,10 @@
                                 echo form_submit($btn);
                                 echo form_close();
                                 ?>
+                                <div class="ratings">
+                                    <p class="pull-right">
+                                        Votes: <?= $product["rating"]; ?>
+                                    </p>
                                 </div>
                             </div>
                         </div>

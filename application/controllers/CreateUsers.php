@@ -22,7 +22,7 @@ class CreateUsers extends CI_Controller {
 		}
 
 		if (!$this->ion_auth->logged_in() OR (!$this->ion_auth->is_admin() AND $this->data["user_group"]["id"] != 2)) {
-			redirect('', 'refresh');
+            redirect('', 'refresh');
 		}
 
         $this->data['title'] = $this->lang->line('create_user_heading');

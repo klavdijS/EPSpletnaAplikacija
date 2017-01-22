@@ -40,6 +40,13 @@
                         echo form_close();
                         ?>
                         </div>
+                    <p class="pull-right">
+                        Votes: <span id="votes"><?= $product["rating"]; ?></span>
+                        <?php if ( ! isset($_SESSION["voted"]) ) : ?>
+                            <span class="glyphicon glyphicon-thumbs-up" id="<?= $product["id"]; ?>"></span>
+                            <span class="glyphicon glyphicon-thumbs-down" id="<?= $product["id"]; ?>"></span>
+                        <?php endif; ?>
+                    </p>
                 </div>
             </div>
         </div>
@@ -65,3 +72,5 @@
 
 </div>
 <!-- /.container -->
+
+<script src="<?= base_url(); ?>js/rating.js"></script>

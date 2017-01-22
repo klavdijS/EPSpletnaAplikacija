@@ -33,7 +33,7 @@ class NewProduct extends CI_Controller {
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
 
-		if ($data["user_group"]["group_id"] != 2) {
+		if ($data["user_group"]["group_id"] != 1 && $data["user_group"]["group_id"] != 2) {
 			redirect('');
 		}
 
