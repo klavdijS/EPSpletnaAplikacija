@@ -47,9 +47,14 @@ class Auth extends CI_Controller {
 			// check to see if the user is logging in
 			// check for "remember me"
 			$remember = (bool) $this->input->post('remember');
-			$group = $this->Shop_model->get_user_group_by_name($this->input->post('identity'));
-
+			
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)) {
+				if($this->ion_auth->in_group(array(1, 2))) {
+					$username = $this->input->post('identity');
+					$group = $this->Shop_model->get_user_group_by_name($username);
+					log_message('error', 'User '.$username.' ['.$group["name"].'] was successfully logged in. IP: '.$_SERVER['REMOTE_ADDR']);
+				}
+
 				//if the login is successful
 				//redirect them back to the home page
 				$this->session->set_flashdata('message', $this->ion_auth->messages());

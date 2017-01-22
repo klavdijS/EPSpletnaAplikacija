@@ -32,22 +32,23 @@
                                 echo form_hidden('name', $name);
                                 echo form_hidden('price', $price);
                                 ?>
-                                <div >
-                                <?php $btn = array(
-                                'class' => 'btn btn-success btn-sml',
-                                'value' => 'Add to Cart',
-                                'name' => 'action'
-                                );
-                                echo form_submit($btn);
-                                echo form_close();
-                                ?>
                                 <div class="ratings">
                                     <p class="pull-right">
                                         Votes: <?= $product["rating"]; ?>
                                     </p>
+                                    <?php 
+                                        $btn = array(
+                                            'class' => 'btn btn-success btn-sml',
+                                            'value' => 'Add to Cart',
+                                            'name' => 'action'
+                                        );
+                                        echo form_submit($btn);
+                                        echo form_close();
+                                    ?>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     <?php endif; ?>
 
                 <?php endforeach; ?>

@@ -71,6 +71,11 @@ class CreateUsers extends CI_Controller {
             // check to see if we are creating the user
             // redirect them back to the admin page
             $this->session->set_flashdata('message', $this->ion_auth->messages());
+            if($this->ion_auth->in_group(array(1, 2))) {
+                $user = $this->ion_auth->user()->row();
+                $group = $this->Shop_model->get_user_group_by_name($user->username);
+                log_message('error', 'New user was successfully created by '.$user->username.' ['.$group["name"].'] from IP: '.$_SERVER['REMOTE_ADDR']);
+            }
             redirect('edit-users', 'refresh');
         } else {
             // display the create user form
