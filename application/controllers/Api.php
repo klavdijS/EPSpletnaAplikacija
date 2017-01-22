@@ -12,6 +12,8 @@ class Api extends REST_Controller {
 
 		$this->load->model('Shop_model');
 		$this->load->helper('url');
+		$this->load->library('cart');
+		$this->load->helper('form');
 	}
 
 	public function index_get() {

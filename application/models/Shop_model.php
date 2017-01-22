@@ -52,8 +52,25 @@ class Shop_model extends CI_Model {
 			 	);
 			
 			 	$this->db->insert('product_gallery', $data);
-			 }
-		 }
+			}
+		}
+	}
+
+	public function set_order($productid) {
+		if (!$this->ion_auth->logged_in()) {
+			redirect('auth/login');
+		}
+
+		$userId = $this->ion_auth->user()->row()->id;
+
+		$data = array(
+			'status'		=> 0,
+			'products_id'	=> $productid,
+			'date'			=> date('Y/m/d H:i:s'),
+			'users_id'		=> $userId
+		);
+
+	 	$this->db->insert('orders', $data);
 	}
 
 	public function get_product_gallery($id) {
