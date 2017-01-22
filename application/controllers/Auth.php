@@ -44,6 +44,7 @@ class Auth extends CI_Controller {
 			// check to see if the user is logging in
 			// check for "remember me"
 			$remember = (bool) $this->input->post('remember');
+			$group = $this->Shop_model->get_user_group_by_name($this->input->post('identity'));
 
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)) {
 				//if the login is successful
@@ -54,7 +55,7 @@ class Auth extends CI_Controller {
 				// if the login was un-successful
 				// redirect them back to the login page
 				$this->session->set_flashdata('message', $this->ion_auth->errors());
-				redirect('auth/login', 'refresh'); // use redirects instead of loading views for compatibility with MY_Controller libraries
+				redirect('auth/login', 'refresh');
 			}
 		} else {
 			// the user is not logging in so display the login page
@@ -533,14 +534,14 @@ class Auth extends CI_Controller {
 		$currentGroups = $this->ion_auth->get_users_groups($id)->result();
 
 		// validate form input
-		$this->form_validation->set_rules('first_name', $this->lang->line('edit_user_validation_fname_label'), 'required');
-		$this->form_validation->set_rules('last_name', $this->lang->line('edit_user_validation_lname_label'), 'required');
-		$this->form_validation->set_rules('phone', $this->lang->line('edit_user_validation_phone_label'), 'required');
-		$this->form_validation->set_rules('street', $this->lang->line('edit_user_validation_address_street_label'), 'required');
-		$this->form_validation->set_rules('street_number', $this->lang->line('edit_user_validation_address_street_number_label'), 'required');
-		$this->form_validation->set_rules('city', $this->lang->line('edit_user_validation_address_city_label'), 'required');
-		$this->form_validation->set_rules('postcode', $this->lang->line('edit_user_validation_address_postcode_label'), 'required');
-		$this->form_validation->set_rules('country', $this->lang->line('edit_user_validation_address_country_label'), 'required');
+		$this->form_validation->set_rules('first_name', $this->lang->line('create_user_validation_fname_label'), 'required');
+        $this->form_validation->set_rules('last_name', $this->lang->line('create_user_validation_lname_label'), 'required');
+        $this->form_validation->set_rules('phone', $this->lang->line('create_user_validation_phone_label'), 'trim');
+        $this->form_validation->set_rules('street', $this->lang->line('create_user_validation_address_street_label'), 'trim');
+        $this->form_validation->set_rules('street_number', $this->lang->line('create_user_validation_address_street_number_label'), 'trim');
+        $this->form_validation->set_rules('city', $this->lang->line('create_user_validation_address_city_label'), 'trim');
+        $this->form_validation->set_rules('postcode', $this->lang->line('create_user_validation_address_postcode_label'), 'trim');
+        $this->form_validation->set_rules('country', $this->lang->line('create_user_validation_address_country_label'), 'trim');
 
 		if (isset($_POST) && !empty($_POST)) {
 			// do we have a valid request?

@@ -102,6 +102,13 @@ class Shop_model extends CI_Model {
 		 }
 	}
 
+	public function set_votes($vote, $id) {
+		$product = $this->db->get_where('products', array('id' => $id))->row_array();
+		$rating = $product["rating"] + $vote;
+		$this->db->where('id', $id)->update('products', array('rating' => $rating));
+		return $rating;
+	}
+
 	public function get_product_gallery($id) {
 		return $this->db->get_where('product_gallery', array('products_id' => $id))->result_array();
 	}
@@ -120,6 +127,10 @@ class Shop_model extends CI_Model {
 
 	public function get_user_group($id) {
 		return $this->db->select('*')->from('users_groups')->where('user_id', $id)->join('groups', 'groups.id = users_groups.group_id')->get()->row_array();	
+	}
+
+	public function get_user_group_by_name($name) {
+		return $this->db->select('*')->from('users')->where('username', $name)->join('users_groups', 'users_groups.user_id = users.id')->join('groups', 'groups.id = users_groups.group_id')->get()->row_array();	
 	}
 
 	public function get_user($id = FALSE) {

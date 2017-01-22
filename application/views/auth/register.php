@@ -11,7 +11,7 @@
 
             <div id="infoMessage" <?php if(!empty($message)) echo 'class="alert alert-warning"';?>><?php echo $message;?></div>
 
-            <?php if ( $logged_in ) echo form_open("edit-users"); else echo form_open("auth/create_user");?>
+            <?php if ( $logged_in ) echo form_open("create-users"); else echo form_open("auth/create_user");?>
 
                 <!-- First Name / Last Name -->
                 <div class="row">

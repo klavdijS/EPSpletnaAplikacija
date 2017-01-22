@@ -24,7 +24,12 @@
                                     <h4 class="pull-right">$<?= $product["price"]; ?></h4>
                                     <h4><a href="<?= base_url().'product/'.$product["id"]; ?>"><?= $product["name"]; ?></a></h4>
                                     <p><?= $abstract; ?></p>
+                                </div>
+                                <div class="ratings">
                                     <input type="button" class="btn btn-success btn-sm" value="Add to cart">
+                                    <p class="pull-right">
+                                        Votes: <?= $product["rating"]; ?>
+                                    </p>
                                 </div>
                             </div>
                         </div>

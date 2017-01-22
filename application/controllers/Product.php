@@ -24,4 +24,12 @@ class Product extends CI_Controller {
 		$this->load->view('templates/footer');
 	}
 
+	public function vote() {
+		if( isset($_POST['vote']) && isset($_POST['id'])  ) {
+			$vote = $_POST['vote'];
+			$id = $_POST['id'];
+			echo $this->Shop_model->set_votes( $vote, $id );
+		}
+	}
+
 }
