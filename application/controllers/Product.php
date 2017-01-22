@@ -17,6 +17,7 @@ class Product extends CI_Controller {
 	public function view( $productId ) {
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data["product"] = $this->Shop_model->get_product( $productId );
+		$data["productId"] = $productId;
 		$data["productGallery"] = $this->Shop_model->get_product_gallery( $productId );
 		if($data["logged_in"]) $data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
 
