@@ -9,7 +9,9 @@ class EditUsers extends CI_Controller {
 		$this->load->model('Shop_model');
 		$this->load->helper('url');
 		$this->load->library('ion_auth');
+		$this->load->library('cart');
 		$this->load->library('form_validation');
+		$this->load->helper('form');
 		$this->lang->load('auth');
 	}
 

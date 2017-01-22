@@ -14,6 +14,8 @@ class Api extends REST_Controller {
 		$this->load->library('ion_auth');
 		$this->load->library('form_validation');
 		$this->load->helper('url');
+		$this->load->library('cart');
+		$this->load->helper('form');
 	}
 
 	public function index_get() {

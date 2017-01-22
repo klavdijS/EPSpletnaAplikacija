@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="<?= base_url(); ?>">Shop Name</a>
+            <a class="navbar-brand" href="<?= base_url(); ?>">CloudStore</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -39,7 +39,12 @@
                 <?php if ( $logged_in ) : ?>
                     <li>
                         <a href="#" data-toggle="modal" data-target="#cart">
-                            <span class="glyphicon glyphicon-shopping-cart"></span> Cart <span class="badge">4</span>
+                            <span class="glyphicon glyphicon-shopping-cart"></span> Cart
+                            <?php if ($cart = $this->cart->contents()): ?>
+                                <span class="badge">
+                                <?= $this->cart->total_items(); ?>
+                                </span>
+                            <?php endif; ?>
                         </a>
                     </li>
                     <li>

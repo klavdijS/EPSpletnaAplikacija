@@ -21,7 +21,25 @@
                     <h4 class="pull-right">$<?= $product["price"]; ?></h4>
                     <h4><?= $product["name"]; ?></h4>
                     <p><?= $product["description"]; ?></p>
-                    <input type="button" class="btn btn-success btn-sm" value="Add to cart">
+                    <?php
+                        $id = $productId;
+                        $name = $product['name'];
+                        $price = $product['price'];
+                        echo form_open('home/addCart');
+                        echo form_hidden('id', $id);
+                        echo form_hidden('name', $name);
+                        echo form_hidden('price', $price);
+                        ?>
+                        <div >
+                        <?php $btn = array(
+                        'class' => 'btn btn-success btn-sml',
+                        'value' => 'Add to Cart',
+                        'name' => 'action'
+                        );
+                        echo form_submit($btn);
+                        echo form_close();
+                        ?>
+                        </div>
                     <p class="pull-right">
                         Votes: <span id="votes"><?= $product["rating"]; ?></span>
                         <?php if ( ! isset($_SESSION["voted"]) ) : ?>

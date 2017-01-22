@@ -16,7 +16,9 @@ class MyProducts extends CI_Controller {
 		$this->load->model('Shop_model');
 		$this->load->helper('url');
 		$this->load->library('ion_auth');
+		$this->load->library('cart');
 		$this->load->library('form_validation');
+		$this->load->helper('form');
 		$this->load->library('upload', $config);
 	}
 
@@ -51,7 +53,7 @@ class MyProducts extends CI_Controller {
 		$data["user_group"] = $this->Shop_model->get_user_group($userId);
 		$data["product"] = $this->Shop_model->get_product($id);
 
-		if (!$data["product"] OR $data["user_group"]["id"] != 2 OR $userId != $data["product"]["users_id"]) {
+		if (!$data["product"] OR ($data["user_group"]["id"] != 1 AND $data["user_group"]["id"] != 2) OR $userId != $data["product"]["users_id"]) {
 			redirect('');
 		}
 

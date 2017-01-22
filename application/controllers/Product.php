@@ -9,12 +9,15 @@ class Product extends CI_Controller {
 		$this->load->model('Shop_model');
 		$this->load->helper('url');
 		$this->load->library('ion_auth');
+		$this->load->library('cart');
 		$this->load->library('session');
+		$this->load->helper('form');
 	}
 
 	public function view( $productId ) {
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data["product"] = $this->Shop_model->get_product( $productId );
+		$data["productId"] = $productId;
 		$data["productGallery"] = $this->Shop_model->get_product_gallery( $productId );
 		if($data["logged_in"]) $data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
 

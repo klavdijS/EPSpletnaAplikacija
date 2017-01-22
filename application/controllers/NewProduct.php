@@ -21,6 +21,8 @@ class NewProduct extends CI_Controller {
 		$this->load->library('ion_auth');
 		$this->load->library('form_validation');
 		$this->load->library('upload', $config);
+		$this->load->library('cart');
+		$this->load->library('session');
 	}
 
 	public function index() {

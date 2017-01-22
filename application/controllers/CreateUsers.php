@@ -11,6 +11,9 @@ class CreateUsers extends CI_Controller {
 		$this->load->library('ion_auth');
 		$this->load->library('form_validation');
 		$this->lang->load('auth');
+        $this->load->library('cart');
+        $this->load->library('form_validation');
+        $this->load->helper('form');
 	}
 
 	public function index() {

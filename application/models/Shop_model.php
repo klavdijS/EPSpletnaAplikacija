@@ -17,6 +17,32 @@ class Shop_model extends CI_Model {
 		return $this->db->get_where('products', array('users_id' => $id))->result_array();
 	}
 
+	public function get_orders($id, $user_group) {
+		if ($user_group == 1) {
+			return $this->db->select('*')->from('orders')->join('products', 'id = orders.products_id')->get()->result_array();
+		}
+		else if ($user_group == 2) {
+			return $this->db->select('*')->from('products')->where('users_id', $id)->join('orders', 'products_id = products.id')->get()->result_array();
+		}
+		else if ($user_group == 3) {
+			return $this->db->select('*')->from('orders')->where('users_id1', $id)->join('products', 'id = orders.products_id')->get()->result_array();
+		}
+	}
+
+	public function approve_order($id) {
+		$data = array(
+			'status'		=> 1
+		);
+		$this->db->where('id1', $id)->update('orders', $data);
+	}
+
+	public function cancel_order($id) {
+		$data = array(
+			'status'		=> 2
+		);
+		$this->db->where('id1', $id)->update('orders', $data);
+	}
+
 	public function get_product($id) {
 		return $this->db->get_where('products', array('id' => $id))->row_array();
 	}
@@ -56,8 +82,26 @@ class Shop_model extends CI_Model {
 			 	);
 			
 			 	$this->db->insert('product_gallery', $data);
-			 }
-		 }
+			}
+		}
+	}
+
+	public function set_order($productid, $quantity) {
+		if (!$this->ion_auth->logged_in()) {
+			redirect('auth/login');
+		}
+
+		$userId = $this->ion_auth->user()->row()->id;
+
+		$data = array(
+			'status'		=> 0,
+			'products_id'	=> $productid,
+			'date'			=> date('Y/m/d H:i:s'),
+			'users_id'		=> $userId, 
+			'qty'			=> $quantity
+		);
+
+	 	$this->db->insert('orders', $data);
 	}
 
 	public function update_product($userId, $productId) {
