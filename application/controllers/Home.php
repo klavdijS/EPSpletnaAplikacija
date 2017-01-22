@@ -94,19 +94,24 @@ class Home extends CI_Controller {
 	public function checkoutOpen() {
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data['products'] = $this->Shop_model->get_products();
+		if ($this->ion_auth->logged_in())
+			$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/nav', $data);
 		$this->load->view('checkout', $data);
 		$this->load->view('templates/shopping-cart', $data);
 		$this->load->view('templates/footer');
+	}
 
+	public function confirmOrder() {
 		$cart = $this->cart->contents();
 		foreach ($cart as $item) {
-			$this->Shop_model->set_order($item['id']);
+			$this->Shop_model->set_order($item['id'], $item['qty']);
 		}
 
-		#$this->cart->destroy();
+		$this->cart->destroy();
+		redirect('home');
 	}
 
 }

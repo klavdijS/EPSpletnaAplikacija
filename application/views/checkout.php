@@ -48,7 +48,7 @@
                 </table>
                 </div>
                 <div class="modal-footer">
-                    <a href="<?= base_url(); ?>home">Back to main page</a>
+                    <a href="<?= base_url(); ?>home/confirmOrder">Confirm order</a>
                 </div>
             </div>
         </div>
