@@ -28,6 +28,7 @@
                         $price = $order['price'];
                         $seller = $order['users_id'];
                         $buyer = $order['users_id1'] ?>
+                    <?php if ($order['status'] == 0): ?>
                     <tr>
                         <?php if ($user_group['group_id'] == 1): ?>
                         <td><?= $order["users_id"]; ?></td>
@@ -36,18 +37,9 @@
                         <td><?= $order["name"]; ?></td>
                         <td><?= $order["qty"]; ?></td>
                         <td>$ <?= $order["price"]; ?></td>
+                        <td><span class="label label-warning">PENDING</span></td>
                         <td>
-                            <?php if ($order['status'] == 0): ?>
-                            <span class="label label-warning">PENDING</span>
-                            <?php endif; ?>
-                            <?php if ($order['status'] == 1): ?>
-                            <span class="label label-success">APPROVED</span>
-                            <?php endif; ?>
-                            <?php if ($order['status'] == 2): ?>
-                            <span class="label label-danger">CANCELED</span>
-                            <?php endif; ?></td>
-                        <td>
-                            <?php if ($user_group['group_id'] == 2 && $order['status'] == 0): ?>
+                            <?php if ($user_group['group_id'] == 2): ?>
                             <?php 
                             echo form_open('orders/approveOrder');
                             echo form_hidden('id', $id);
@@ -71,6 +63,77 @@
                             <?php endif; ?>
                         </td>
                     </tr>
+                    <?php endif; ?>
+                    <?php endforeach; ?>
+                    <?php foreach ($orders as $order):
+                        $id = $order['id1'];
+                        $qty = $order['qty'];
+                        $status = $order['status'];
+                        $name = $order['name'];
+                        $price = $order['price'];
+                        $seller = $order['users_id'];
+                        $buyer = $order['users_id1'] ?>
+                    <?php if ($order['status'] == 1): ?>
+                    <tr>
+                        <?php if ($user_group['group_id'] == 1): ?>
+                        <td><?= $order["users_id"]; ?></td>
+                        <td><?= $order["users_id1"]; ?></td>
+                        <?php endif; ?>
+                        <td><?= $order["name"]; ?></td>
+                        <td><?= $order["qty"]; ?></td>
+                        <td>$ <?= $order["price"]; ?></td>
+                        <td><span class="label label-success">APPROVED</span></td>
+                        <td>
+                            <?php if ($user_group['group_id'] == 2): ?>
+                            <?php 
+                            echo form_open('orders/removeOrder');
+                            echo form_hidden('id', $id);
+                            $btn = array(
+                            'class' => 'btn btn-info btn-sm',
+                            'value' => 'Remove',
+                            'name' => 'action'
+                            );
+                            echo form_submit($btn);
+                            echo form_close(); ?>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
+                    <?php endforeach; ?>
+                    <?php foreach ($orders as $order):
+                        $id = $order['id1'];
+                        $qty = $order['qty'];
+                        $status = $order['status'];
+                        $name = $order['name'];
+                        $price = $order['price'];
+                        $seller = $order['users_id'];
+                        $buyer = $order['users_id1'] ?>
+                    <?php if ($order['status'] == 2): ?>
+                    <tr>
+                        <?php if ($user_group['group_id'] == 1): ?>
+                        <td><?= $order["users_id"]; ?></td>
+                        <td><?= $order["users_id1"]; ?></td>
+                        <?php endif; ?>
+                        <td><?= $order["name"]; ?></td>
+                        <td><?= $order["qty"]; ?></td>
+                        <td>$ <?= $order["price"]; ?></td>
+                        <td><span class="label label-danger">CANCELED</span></td>
+                        <td>
+                            <?php if ($user_group['group_id'] == 2): ?>
+                            <?php 
+                            echo form_open('orders/removeOrder');
+                            echo form_hidden('id', $id);
+                            $btn = array(
+                            'class' => 'btn btn-info btn-sm',
+                            'value' => 'Remove',
+                            'name' => 'action'
+                            );
+                            echo form_submit($btn);
+                            echo form_close(); ?>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
                     <?php endforeach; ?>
                 </tbody>
             </table>

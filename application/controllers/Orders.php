@@ -40,4 +40,9 @@ class Orders extends CI_Controller {
 		$this->Shop_model->cancel_order($id);
 		redirect('orders');
 	}
+	public function removeOrder() {
+		$id = $this->input->post('id');
+		$this->Shop_model->remove_order($id);
+		redirect('orders');
+	}
 }

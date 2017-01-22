@@ -43,6 +43,10 @@ class Shop_model extends CI_Model {
 		$this->db->where('id1', $id)->update('orders', $data);
 	}
 
+	public function remove_order($id) {
+		$this->db->where('id1', $id)->delete('orders');
+	}
+
 	public function get_product($id) {
 		return $this->db->get_where('products', array('id' => $id))->row_array();
 	}
