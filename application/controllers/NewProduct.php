@@ -29,11 +29,20 @@ class NewProduct extends CI_Controller {
 		if (!$this->ion_auth->logged_in()) {
 			redirect('auth/login');
 		}
-		
+
 		$data["logged_in"] = $this->ion_auth->logged_in();
+		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+
+		if ($data["user_group"]["group_id"] != 2) {
+			redirect('');
+		}
+
+		$data["title"] = "Add New Product";
+		$data["btn"] = "Add new product";
+		$data["action"] = "new-product";
 
 		// Validacija poslanih podatkov
-		$this->form_validation->set_rules('product', 'product', 'required');
+		$this->form_validation->set_rules('name', 'product', 'required');
 		$this->form_validation->set_rules('description', 'description', 'required');
 		$this->form_validation->set_rules('price', 'price', 'numeric', 'required');
 
@@ -51,11 +60,11 @@ class NewProduct extends CI_Controller {
 		if ($this->form_validation->run() === FALSE OR ! empty($data["upload_errors"])) {
 
 			// Inputi
-			$data['product'] = array(
+			$data['name'] = array(
 				'type'	=> 'text', 
 				'class'	=> 'form-control',
-				'name'	=> 'product',
-				'value'	=> $this->form_validation->set_value('product')
+				'name'	=> 'name',
+				'value'	=> $this->form_validation->set_value('name')
 			);
 
 			$data['description'] = array(

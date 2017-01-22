@@ -4,6 +4,7 @@ class Auth extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
+		$this->load->model('Shop_model');
 		$this->load->database();
 		$this->load->library(array('ion_auth','form_validation'));
 		$this->load->helper(array('url','language'));
@@ -35,6 +36,8 @@ class Auth extends CI_Controller {
 		}
 
 		$this->data['title'] = $this->lang->line('login_heading');
+
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		//validate form input
 		$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required');
@@ -73,7 +76,11 @@ class Auth extends CI_Controller {
 				'class' => 'form-control',
 			);
 
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/login', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		}
 	}
 
@@ -86,8 +93,7 @@ class Auth extends CI_Controller {
 
 		// redirect them to the login page
 		$this->session->set_flashdata('message', $this->ion_auth->messages());
-		# redirect('auth/login', 'refresh');
-		redirect($this->agent->referrer());
+		redirect('auth/login', 'refresh');
 	}
 
 	// change password
@@ -101,6 +107,9 @@ class Auth extends CI_Controller {
 		}
 
 		$user = $this->ion_auth->user()->row();
+
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		if ($this->form_validation->run() == false) {
 			// display the form
@@ -137,7 +146,11 @@ class Auth extends CI_Controller {
 			);
 
 			// render
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/change_password', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		} else {
 			$identity = $this->session->userdata('identity');
 
@@ -292,17 +305,19 @@ class Auth extends CI_Controller {
 
 	// activate the user
 	public function activate($id, $code=false) {
+		$user_group = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		
 		if ($code !== false) {
 			$activation = $this->ion_auth->activate($id, $code);
 		}
-		else if ($this->ion_auth->is_admin()) {
+		else if ($this->ion_auth->is_admin() OR $user_group["id"] == 2) {
 			$activation = $this->ion_auth->activate($id);
 		}
 
 		if ($activation) {
 			// redirect them to the auth page
 			$this->session->set_flashdata('message', $this->ion_auth->messages());
-			redirect("auth", 'refresh');
+			redirect("edit-users", 'refresh');
 		} else {
 			// redirect them to the forgot password page
 			$this->session->set_flashdata('message', $this->ion_auth->errors());
@@ -312,10 +327,13 @@ class Auth extends CI_Controller {
 
 	// deactivate the user
 	public function deactivate($id = NULL) {
-		if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && $this->data["user_group"]["id"] != 2)) {
 			// redirect them to the home page because they must be an administrator to view this
 			return show_error('You must be an administrator to view this page.');
 		}
+
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		$id = (int) $id;
 
@@ -328,7 +346,11 @@ class Auth extends CI_Controller {
 			$this->data['csrf'] = $this->_get_csrf_nonce();
 			$this->data['user'] = $this->ion_auth->user($id)->row();
 
+			$this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
 			$this->_render_page('auth/deactivate_user', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
 		} else {
 			// do we really want to deactivate?
 			if ($this->input->post('confirm') == 'yes') {
@@ -338,13 +360,13 @@ class Auth extends CI_Controller {
 				}
 
 				// do we have the right userlevel?
-				if ($this->ion_auth->logged_in() && $this->ion_auth->is_admin()) {
+				if ($this->ion_auth->logged_in() && ($this->ion_auth->is_admin() OR $this->data["user_group"]["id"] == 2)) {
 					$this->ion_auth->deactivate($id);
 				}
 			}
 
 			// redirect them back to the auth page
-			redirect('auth', 'refresh');
+			redirect("edit-users", 'refresh');
 		}
 	}
 
@@ -359,6 +381,8 @@ class Auth extends CI_Controller {
         #if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
         #    redirect('auth', 'refresh');
         #}
+
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
         $tables = $this->config->item('tables','ion_auth');
         $identity_column = $this->config->item('identity','ion_auth');
@@ -493,17 +517,19 @@ class Auth extends CI_Controller {
                 'class' => 'form-control',
             );
 
-            $this->_render_page('auth/register', $this->data);
+            $this->load->view('templates/header');
+			$this->load->view('templates/nav', $this->data);
+			$this->_render_page('auth/register', $this->data);
+			$this->load->view('templates/shopping-cart', $this->data);
+			$this->load->view('templates/footer');
         }
     }
 
 	// edit a user
 	public function edit_user($id) {
 		$this->data['title'] = $this->lang->line('edit_user_heading');
-
-		if (!$this->ion_auth->logged_in() || (!$this->ion_auth->is_admin() && !($this->ion_auth->user()->row()->id == $id))) {
-			redirect('auth', 'refresh');
-		}
+		$this->data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+		$this->data["logged_in"] = $this->ion_auth->logged_in();
 
 		$user = $this->ion_auth->user($id)->row();
 		$groups=$this->ion_auth->groups()->result_array();
@@ -670,7 +696,11 @@ class Auth extends CI_Controller {
 			'class' => 'form-control',
 		);
 
+		$this->load->view('templates/header');
+		$this->load->view('templates/nav', $this->data);
 		$this->_render_page('auth/edit_user', $this->data);
+		$this->load->view('templates/shopping-cart', $this->data);
+		$this->load->view('templates/footer');
 	}
 
 	// create a new group
