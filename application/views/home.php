@@ -48,10 +48,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                     <?php endif; ?>
 
                 <?php endforeach; ?>
-            </div>
         </div>
 
     </div>

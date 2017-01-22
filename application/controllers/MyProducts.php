@@ -128,6 +128,11 @@ class MyProducts extends CI_Controller {
 			$this->load->view('templates/footer');
 		} else {
 			$this->Shop_model->update_product($userId, $data["product"]["id"]);
+			if($this->ion_auth->in_group(array(1, 2))) {
+            $user = $this->ion_auth->user()->row();
+            $group = $this->Shop_model->get_user_group_by_name($user->username);
+            log_message('error', 'User '.$user->username.' ['.$group["name"].'] successfully updated product '.$product["name"].'. IP: '.$_SERVER['REMOTE_ADDR']);
+        }
 			redirect('my-products', 'refresh');
 		}
 	}
@@ -141,11 +146,16 @@ class MyProducts extends CI_Controller {
 		$user_group = $this->Shop_model->get_user_group($userId);
 		$product = $this->Shop_model->get_product($id);
 
-		if (!$product OR $user_group["id"] != 2 OR $userId != $product["users_id"]) {
+		if (!$product OR ($user_group["id"] != 2 && $user_group["id"] != 1) OR $userId != $product["users_id"]) {
 			redirect('');
 		}
 
 		$this->Shop_model->deactivate_product($product["id"]);
+		if($this->ion_auth->in_group(array(1, 2))) {
+            $user = $this->ion_auth->user()->row();
+            $group = $this->Shop_model->get_user_group_by_name($user->username);
+            log_message('error', 'User '.$user->username.' ['.$group["name"].'] successfully deactivated product '.$product["name"].'. IP: '.$_SERVER['REMOTE_ADDR']);
+        }
 		redirect('my-products', 'refresh');
 	}
 
@@ -158,11 +168,16 @@ class MyProducts extends CI_Controller {
 		$user_group = $this->Shop_model->get_user_group($userId);
 		$product = $this->Shop_model->get_product($id);
 
-		if (!$product OR $user_group["id"] != 2 OR $userId != $product["users_id"]) {
+		if (!$product OR ($user_group["id"] != 2 && $user_group["id"] != 1) OR $userId != $product["users_id"]) {
 			redirect('');
 		}
 
 		$this->Shop_model->activate_product($product["id"]);
+		if($this->ion_auth->in_group(array(1, 2))) {
+            $user = $this->ion_auth->user()->row();
+            $group = $this->Shop_model->get_user_group_by_name($user->username);
+            log_message('error', 'User '.$user->username.' ['.$group["name"].'] successfully activated product '.$product["name"].'. IP: '.$_SERVER['REMOTE_ADDR']);
+        }
 		redirect('my-products', 'refresh');
 	}
 

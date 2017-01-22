@@ -108,6 +108,11 @@ class NewProduct extends CI_Controller {
 			$this->load->view('templates/footer');
 		} else {
 			$this->Shop_model->set_product();
+			if($this->ion_auth->in_group(array(1, 2))) {
+				$user = $this->ion_auth->user()->row();
+				$group = $this->Shop_model->get_user_group_by_name($user->username);
+				log_message('error', 'User '.$user->username.' ['.$group["name"].'] successfully added new product. IP: '.$_SERVER['REMOTE_ADDR']);
+			}
 			redirect('home', 'refresh');
 		}
 	}
