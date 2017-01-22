@@ -33,6 +33,12 @@ class Auth extends CI_Controller {
 	// log the user in
 	public function login() {
 		if ($this->ion_auth->logged_in()) {
+			if($_SERVER["SSL_CLIENT_VERIFY"] !== null && $_SERVER["SSL_CLIENT_VERIFY"] == "SUCCESS") {
+				$username = $this->input->post('identity');
+				$group = $this->Shop_model->get_user_group_by_name($username);
+				log_message('error', 'User '.$username.' ['.$group["name"].'] was successfully certified. IP: '.$_SERVER['REMOTE_ADDR']);
+				redirect('/', 'refresh');
+			}
 			redirect($this->agent->referrer());
 		}
 
@@ -54,6 +60,7 @@ class Auth extends CI_Controller {
 					$username = $this->input->post('identity');
 					$group = $this->Shop_model->get_user_group_by_name($username);
 					log_message('error', 'User '.$username.' ['.$group["name"].'] was successfully logged in. IP: '.$_SERVER['REMOTE_ADDR']);
+					redirect('protected');
 				}
 
 				//if the login is successful
@@ -89,6 +96,10 @@ class Auth extends CI_Controller {
 			$this->load->view('templates/shopping-cart', $this->data);
 			$this->load->view('templates/footer');
 		}
+	}
+
+	public function get_cert() {
+		redirect('auth/login');
 	}
 
 	// log the user out

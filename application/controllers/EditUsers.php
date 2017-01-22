@@ -21,6 +21,10 @@ class EditUsers extends CI_Controller {
             redirect('', 'refresh');
         }
 
+        if($_SERVER["SSL_CLIENT_VERIFY"] === null OR $_SERVER["SSL_CLIENT_VERIFY"] != "SUCCESS") {
+            redirect('', 'refresh');
+        }
+
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data['products'] = $this->Shop_model->get_products();
         $data["users"] = $this->Shop_model->get_user();
