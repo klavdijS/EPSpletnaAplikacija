@@ -18,6 +18,10 @@ class Orders extends CI_Controller {
 		if (!$this->ion_auth->logged_in()) {
 			redirect('auth/login');
 		}
+
+		if($_SERVER["SSL_CLIENT_VERIFY"] === null OR $_SERVER["SSL_CLIENT_VERIFY"] != "SUCCESS") {
+            redirect('', 'refresh');
+        }
 		
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
