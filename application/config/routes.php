@@ -60,4 +60,6 @@ $route['my-products'] = 'MyProducts';
 $route['my-products/(:any)/(:num)'] = 'MyProducts/$1/$2';
 $route['my-profile'] = 'MyProfile';
 $route['new-product'] = 'NewProduct';
+$route['protected'] = 'Auth/get_cert';
+$route['protected-admin'] = 'Auth/get_cert';
 $route['default_controller'] = 'Home';
