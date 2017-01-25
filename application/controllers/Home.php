@@ -18,8 +18,10 @@ class Home extends CI_Controller {
 	public function index() {
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data['products'] = $this->Shop_model->get_products();
-		if ($this->ion_auth->logged_in())
+		if ($this->ion_auth->logged_in()) {
 			$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+			$data["user"] = $this->Shop_model->get_user($this->ion_auth->user()->row()->id);
+		}
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/nav', $data);
@@ -94,8 +96,10 @@ class Home extends CI_Controller {
 	public function checkoutOpen() {
 		$data["logged_in"] = $this->ion_auth->logged_in();
 		$data['products'] = $this->Shop_model->get_products();
-		if ($this->ion_auth->logged_in())
+		if ($this->ion_auth->logged_in()) {
 			$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);
+			$data["user"] = $this->Shop_model->get_user($this->ion_auth->user()->row()->id);
+		}
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/nav', $data);

@@ -95,7 +95,9 @@
                     <?php echo lang('create_user_password_confirm_label', 'password_confirm'); ?>
                     <?php echo form_input($password_confirm); ?>
                 </div>
-
+                <div>
+                <?php // if ( !$logged_in ) echo $recaptcha_html; ?>
+                </div>
                 <?php echo form_submit('submit', lang('create_user_submit_btn'), array("class" => "btn btn-default")); ?>
 
             <?php echo form_close();?>

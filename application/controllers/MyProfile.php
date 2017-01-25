@@ -18,6 +18,8 @@ class MyProfile extends CI_Controller {
 	public function index() {
 		if (!$this->ion_auth->logged_in()) {
 			redirect('auth/login');
+		} else {
+			$data["user"] = $this->Shop_model->get_user($this->ion_auth->user()->row()->id);
 		}
 
 		$data["user_group"] = $this->Shop_model->get_user_group($this->ion_auth->user()->row()->id);

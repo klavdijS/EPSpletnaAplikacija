@@ -17,6 +17,8 @@ class Orders extends CI_Controller {
 	public function index() {
 		if (!$this->ion_auth->logged_in()) {
 			redirect('auth/login');
+		} else {
+			$data["user"] = $this->Shop_model->get_user($this->ion_auth->user()->row()->id);
 		}
 		
 		$data["logged_in"] = $this->ion_auth->logged_in();
@@ -38,6 +40,11 @@ class Orders extends CI_Controller {
 	public function cancelOrder() {
 		$id = $this->input->post('id');
 		$this->Shop_model->cancel_order($id);
+		redirect('orders');
+	}
+	public function removeOrder() {
+		$id = $this->input->post('id');
+		$this->Shop_model->remove_order($id);
 		redirect('orders');
 	}
 }

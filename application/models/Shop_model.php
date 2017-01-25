@@ -19,7 +19,7 @@ class Shop_model extends CI_Model {
 
 	public function get_orders($id, $user_group) {
 		if ($user_group == 1) {
-			return $this->db->select('*')->from('orders')->join('products', 'id = orders.products_id')->get()->result_array();
+			return $this->db->select('*')->from('orders')->join('products', 'products.id = orders.products_id')->get()->result_array();
 		}
 		else if ($user_group == 2) {
 			return $this->db->select('*')->from('products')->where('users_id', $id)->join('orders', 'products_id = products.id')->get()->result_array();
@@ -27,6 +27,11 @@ class Shop_model extends CI_Model {
 		else if ($user_group == 3) {
 			return $this->db->select('*')->from('orders')->where('users_id1', $id)->join('products', 'id = orders.products_id')->get()->result_array();
 		}
+	}
+
+	public function user_certified($id) {
+		return $this->db->where('id', $id)->update('users', array('isCertified' => TRUE));
+		// return $this->db->insert('users', array('isCertified' => TRUE);
 	}
 
 	public function approve_order($id) {
@@ -41,6 +46,10 @@ class Shop_model extends CI_Model {
 			'status'		=> 2
 		);
 		$this->db->where('id1', $id)->update('orders', $data);
+	}
+
+	public function remove_order($id) {
+		$this->db->where('id1', $id)->delete('orders');
 	}
 
 	public function get_product($id) {

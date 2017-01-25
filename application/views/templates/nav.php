@@ -15,14 +15,14 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <?php if ( $logged_in ) : ?>
                 <ul class="nav navbar-nav">
-                    <?php if ( ($user_group["group_id"] == 1 OR $user_group["group_id"] == 2) && ($_SERVER["SSL_CLIENT_VERIFY"] !== null && $_SERVER["SSL_CLIENT_VERIFY"] == "SUCCESS") ) : ?>
+                    <?php if ( ($user_group["group_id"] == 1 OR $user_group["group_id"] == 2) && isset($user["isCertified"]) && $user["isCertified"] ) : ?>
                         <li><a href="<?= base_url(); ?>new-product">Add new product</a></li>
                         <li><a href="<?= base_url(); ?>my-products">My products</a></li>
                     <?php endif; ?>
                     <li>
                         <a href="<?= base_url(); ?>orders">Orders</a>
                     </li>
-                    <?php if ( ($user_group["group_id"] == 1 OR $user_group["group_id"] == 2) && ($_SERVER["SSL_CLIENT_VERIFY"] !== null && $_SERVER["SSL_CLIENT_VERIFY"] == "SUCCESS") ) : ?>
+                    <?php if ( ($user_group["group_id"] == 1 OR $user_group["group_id"] == 2) && isset($user["isCertified"]) && $user["isCertified"] ) : ?>
                         <li>
                             <a href="<?= base_url(); ?>my-profile">My profile</a>
                         </li>

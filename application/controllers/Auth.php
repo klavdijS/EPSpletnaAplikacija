@@ -59,7 +59,11 @@ class Auth extends CI_Controller {
 					$username = $this->input->post('identity');
 					$group = $this->Shop_model->get_user_group_by_name($username);
 					log_message('error', 'User '.$username.' ['.$group["name"].'] was successfully logged in. IP: '.$_SERVER['REMOTE_ADDR']);
-					redirect('protected');
+					if($this->ion_auth->in_group(array(1))) {
+						redirect('protected-admin');
+					} else {
+						redirect('protected');
+					}
 				}
 
 				//if the login is successful
@@ -98,6 +102,7 @@ class Auth extends CI_Controller {
 	}
 
 	public function get_cert() {
+		$this->Shop_model->user_certified($this->ion_auth->user()->row()->id);
 		redirect('auth/login');
 	}
 

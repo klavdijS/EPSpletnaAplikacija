@@ -9,8 +9,7 @@ $(document).ready(function() {
 
 	$('.glyphicon-thumbs-up').click(function() { 
 		var id = $(this).attr('id');
-		console.log(id);
-		$.post ("vote", {vote: 1, id: id}, function(data) { $("votes").html(data); });
+		$.post ("vote", {vote: 1, id: id}, function(data) { $("#votes").html(data); $('.glyphicon').css('display', 'none'); });
 		return false;
 	});
 
@@ -24,8 +23,7 @@ $(document).ready(function() {
 
 	$('.glyphicon-thumbs-down').click(function() { 
 		var id = $(this).attr('id');
-		console.log(id);
-		$.post ("vote", {vote: -1, id: id}, function(data) { $("votes").html(data); });
+		$.post ("vote", {vote: -1, id: id}, function(data) { $("#votes").html(data); $('.glyphicon').css('display', 'none'); });
 		return false;
 	});
 });
