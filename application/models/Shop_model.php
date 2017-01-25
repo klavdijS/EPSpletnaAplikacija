@@ -19,7 +19,7 @@ class Shop_model extends CI_Model {
 
 	public function get_orders($id, $user_group) {
 		if ($user_group == 1) {
-			return $this->db->select('*')->from('orders')->join('products', 'id = orders.products_id')->get()->result_array();
+			return $this->db->select('*')->from('orders')->join('products', 'products.id = orders.products_id')->get()->result_array();
 		}
 		else if ($user_group == 2) {
 			return $this->db->select('*')->from('products')->where('users_id', $id)->join('orders', 'products_id = products.id')->get()->result_array();
